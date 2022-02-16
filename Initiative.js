@@ -7,17 +7,17 @@ function ChooseAttackMethod() {
     content: "<p>Normal roll, advantage, or disadvantage?</p>",
     buttons: {
       normal: {
-        icon: '',
+        icon: "",
         label: "Normal",
         callback: () => (rollDie = "normal"),
       },
       advantage: {
-        icon: '',
+        icon: "",
         label: "Advantage",
         callback: () => (rollDie = "Advantage"),
       },
       disadvantage: {
-        icon: '',
+        icon: "",
         label: "Disadvantage",
         callback: () => (rollDie = "Disadvantage"),
       },
@@ -68,28 +68,29 @@ let selectedRollTypeName = "not set";
 rollTypes.forEach((rollType) => BuildRollTypesButton(rollType));
 function BuildRollTypesButton(eachRollType) {
   rollAspects = new Object();
-  rollAspects["icon"] = '';
+  rollAspects["icon"] = "";
   rollAspects["label"] = eachRollType["label"];
   rollAspects["callback"] = () => (selectedRollTypeName = eachRollType["roll"]);
   btnRollTypes[eachRollType.roll] = rollAspects;
   //console.log(btn);
 }
 function ChooseRollType(attackMethod) {
-  if ("not set" != attackMethod){
-  if ("normal" != attackMethod) {
-    // Display the dialog to pick a roll type -------------------------------------
-    let rollTypeChooser = new Dialog({
-      title: "Choose Roll Type",
-      content: "<p>Roll Stacking?</p>",
-      buttons: btnRollTypes,
-      default: rollTypes[0]["roll"],
-      render: (html) => console.log("Rendering the roll type chooser dialog"),
-      close: (html) => SetSelectedRollType(selectedRollTypeName, attackMethod),
-    });
-    rollTypeChooser.render(true);
-  } else {
-    SetSelectedRollType("Normal", attackMethod);
-  }
+  if ("not set" != attackMethod) {
+    if ("normal" != attackMethod) {
+      // Display the dialog to pick a roll type -------------------------------------
+      let rollTypeChooser = new Dialog({
+        title: "Choose Roll Type",
+        content: "<p>Roll Stacking?</p>",
+        buttons: btnRollTypes,
+        default: rollTypes[0]["roll"],
+        render: (html) => console.log("Rendering the roll type chooser dialog"),
+        close: (html) =>
+          SetSelectedRollType(selectedRollTypeName, attackMethod),
+      });
+      rollTypeChooser.render(true);
+    } else {
+      SetSelectedRollType("Normal", attackMethod);
+    }
   }
 }
 let selectedRollType = undefined;
@@ -161,7 +162,7 @@ function RollDice(die, depth) {
   for (i = 0; i < depth; i++) {
     // Note, I could not get the "reroll()" method to work, hence all the allocations
     roll = new Roll(die);
-    roll.evaluate({async: false});
+    roll.evaluate({ async: false });
     arrayRolls[i] = parseInt(roll.total);
   }
   console.log(`Rolling Dice ${die} ${depth}`);
