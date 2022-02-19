@@ -1,7 +1,7 @@
 /*
  * Each attribute in UVG with a method to evaluate the current actor's values.
  */
-const attributes = {
+window.attributes = {
   strength: {
     label: "Strength",
     getCurrentValue: () => {
