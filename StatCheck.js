@@ -64,7 +64,9 @@ let statChooser = new Dialog({
   content: "<p>Pick a stat</p>",
   buttons: btn,
   default: stats[0]["stat"],
-  render: (html) => console.log("Rendering the stat chooser dialog"),
+  render: (html) => {
+    html.find(".dialog-button").css({ "flex-basis": "100px", "margin": "0 auto" })
+  },
   close: (html) => SetSelectedStat(selectedStatName),
 });
 statChooser.render(true);
