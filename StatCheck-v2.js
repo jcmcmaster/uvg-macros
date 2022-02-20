@@ -1,129 +1,21 @@
-// Algorithm: CHOSEN STAT + 1D20 ROLL w/ STACKABLE ADVANTAGE, STACKABLE DISADVANTAGE, OR NEITHER
+// Algorithm: CHOSEN STAT + ROLL w/ STACKABLE ADVANTAGE, STACKABLE DISADVANTAGE, OR NEITHER
 
-// let game, Dialog, ChatMessage, Roll, actor = {};
-
-let dieSize = 20;
-
-/*
- * Each attribute in UVG with a method to evaluate the current actor's values.
- */
-const attributes = {
-  strength: {
-    label: "Strength",
-    getCurrentValue: () => {
-      try {
-        return game.user.character.data.data.attributes.STR_CURR.value;
-      } catch (e) {
-        console.error(e);
-        alert(`${this.label} isn't set in your character sheet!`);
-      }
-    },
-    getMaxValue: () => {
-      try {
-        return game.user.character.data.data.attributes.STR_FULL.value;
-      } catch (e) {
-        console.error(e);
-        alert(`${this.label} isn't set in your character sheet!`);
-      }
-    },
-  },
-  endurance: {
-    label: "Endurance",
-    getCurrentValue: () => {
-      try {
-        return game.user.character.data.data.attributes.END_CURR.value;
-      } catch (e) {
-        console.error(e);
-        alert(`${this.label} isn't set in your character sheet!`);
-      }
-    },
-    getMaxValue: () => {
-      try {
-        return game.user.character.data.data.attributes.END_FULL.value;
-      } catch (e) {
-        console.error(e);
-        alert(`${this.label} isn't set in your character sheet!`);
-      }
-    },
-  },
-  agility: {
-    label: "Agility",
-    getCurrentValue: () => {
-      try {
-        return game.user.character.data.data.attributes.AGI_CURR.value;
-      } catch (e) {
-        console.error(e);
-        alert(`${this.label} isn't set in your character sheet!`);
-      }
-    },
-    getMaxValue: () => {
-      try {
-        return game.user.character.data.data.attributes.AGI_FULL.value;
-      } catch (e) {
-        console.error(e);
-        alert(`${this.label} isn't set in your character sheet!`);
-      }
-    },
-  },
-  charisma: {
-    label: "Charisma",
-    getCurrentValue: () => {
-      try {
-        return game.user.character.data.data.attributes.CHA_CURR.value;
-      } catch (e) {
-        console.error(e);
-        alert(`${this.label} isn't set in your character sheet!`);
-      }
-    },
-    getMaxValue: () => {
-      try {
-        return game.user.character.data.data.attributes.CHA_FULL.value;
-      } catch (e) {
-        console.error(e);
-        alert(`${this.label} isn't set in your character sheet!`);
-      }
-    },
-  },
-  aura: {
-    label: "Aura",
-    getCurrentValue: () => {
-      try {
-        return game.user.character.data.data.attributes.AUR_CURR.value;
-      } catch (e) {
-        console.error(e);
-        alert(`${this.label} isn't set in your character sheet!`);
-      }
-    },
-    getMaxValue: () => {
-      try {
-        return game.user.character.data.data.attributes.AUR_FULL.value;
-      } catch (e) {
-        console.error(e);
-        alert(`${this.label} isn't set in your character sheet!`);
-      }
-    },
-  },
-  thought: {
-    label: "Thought",
-    getCurrentValue: () => { 
-      try {
-        return game.user.character.data.data.attributes.THO_CURR.value;
-      } catch (e) {
-        console.error(e);
-        alert(`${this.label} isn't set in your character sheet!`)
-      }
-    },
-    getMaxValue: () => { 
-      try {
-        return game.user.character.data.data.attributes.THO_FULL.value;
-      } catch (e) {
-        console.error(e);
-        alert(`${this.label} isn't set in your character sheet!`)
-      }
-    }
-  }
+if (!window.attributes) {
+  $.getScript("https://cdn.jsdelivr.net/gh/jcmcmaster/uvg-macros/api/attributeApi.js", () => {
+    chooseStat();
+  });
+} else {
+  chooseStat();
 }
 
+/*
+ * Configure size of die to roll here.
+ */
+const dieSize = 20;
+
+/*
+ * Defines possible advantage types, including "none".
+ */
 const advantageType = {
   none: { label: "None" },
   advantage: { label: "Advantage" },
@@ -131,19 +23,14 @@ const advantageType = {
 }
 
 /*
- * The values to be evaluated.
+ * The values to be evaluated. Built out by dialog prompts.
  */
-let params = {};
+const params = {};
 
 /*
  * The raw results of the computation.
  */
-let results = {};
-
-/*
- * Entry point
- */
-await chooseStat();
+const results = {};
 
 /*
  * Prompt the player for an attribute and then move on to advantage type selection.
@@ -161,7 +48,6 @@ async function chooseStat() {
           await chooseAdvantageType();
         }
       })),
-    // todo default: stats[0].id,
     render: (html) => html.find(".dialog-button").css({ "flex-basis": "100px", "margin": "0 auto" }),
   })
   
@@ -184,7 +70,6 @@ async function chooseAdvantageType() {
           await chooseAdvantageStacking();
         },
       })),
-    // todo default: "normal",
   });
 
   d.render(true);
@@ -194,7 +79,6 @@ async function chooseAdvantageType() {
  * Prompt the player for advantage stacking, if necessary, and then move on to rolling.
  */
 async function chooseAdvantageStacking() {
-  console.log(params);
   if (params.advantage.type !== advantageType.none) {
       let d = new Dialog({
         title: "Choose Roll Type",
@@ -208,8 +92,6 @@ async function chooseAdvantageStacking() {
               await calculate();
             },
           })),
-        // todo default: rollTypes[0]["roll"],
-        render: () => console.log("Rendering the roll type chooser dialog"),
       });
 
       d.render(true);
@@ -217,6 +99,9 @@ async function chooseAdvantageStacking() {
   else await calculate();
 }
 
+/*
+ * The parameters have been fully established. Roll the dice, then calculate and store the results.
+ */
 async function calculate() {
   let advantageFormula = "";
 
@@ -235,11 +120,19 @@ async function calculate() {
   await display();
 }
 
+/*
+ * The calculations are complete. Display the results.
+ */
 async function display() {
-  console.log(params);
-  console.log(results);
-
   const keptRoll = results.roll.dice[0].total;
+
+  let rollSection = "";
+  if (results.roll.dice[0].results.length === 1) {
+    rollSection = `<b>Roll:</b> ${keptRoll}`;
+  } else {
+    rollSection = `<b>Rolls:</b> ${results.roll.dice[0].results.map(x => x.result).join(", ")}<br/>
+      <b>Kept roll:</b> ${keptRoll}<br/>`
+  }
 
   let bottomLine = "";
   switch (keptRoll) {
@@ -258,8 +151,7 @@ async function display() {
     <b>${params.stat.label}:</b> ${params.stat.getCurrentValue()}<br/>
     <b>Formula:</b> ${results.roll.formula}<br/>
     <hr/>
-    <b>Roll(s):</b> ${results.roll.dice[0].results.map(x => x.result).join(", ")}<br/>
-    <b>Kept roll:</b> ${keptRoll}<br/>
+    ${rollSection}
     <hr/>
     <b>Result: ${bottomLine}</b>
   `;
