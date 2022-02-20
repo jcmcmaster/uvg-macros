@@ -1,4 +1,6 @@
-// Algorithm: CHOSEN STAT + ROLL w/ STACKABLE ADVANTAGE, STACKABLE DISADVANTAGE, OR NEITHER
+/*
+ * Algorithm: CHOSEN STAT + ROLL w/ STACKABLE ADVANTAGE, STACKABLE DISADVANTAGE, OR NEITHER
+ */
 
 if (!window.attributes) {
   $.getScript("https://cdn.jsdelivr.net/gh/jcmcmaster/uvg-macros/api/attributeApi.js", () => {
